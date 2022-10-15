@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-pragma solidity =0.7.6;
+pragma solidity ^0.8.14;
 pragma abicoder v2;
 
-import '@uniswap/v3-core/contracts/libraries/SafeCast.sol';
-import '@uniswap/v3-core/contracts/libraries/TickMath.sol';
-import '@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol';
+import './v3-core/contracts/libraries/SafeCast.sol';
+import './v3-core/contracts/libraries/TickMath.sol';
+import './v3-core/contracts/interfaces/IUniswapV3Pool.sol';
 
 import './interfaces/ISwapRouter.sol';
 import './base/PeripheryImmutableState.sol';

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-pragma solidity >=0.5.0;
+pragma solidity ^0.8.14;
 pragma abicoder v2;
 
-import '@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol';
+import '../v3-core/contracts/interfaces/IUniswapV3Pool.sol';
 
 import '../interfaces/ITickLens.sol';
 
@@ -27,7 +27,7 @@ contract TickLens is ITickLens {
         // fetch populated tick data
         int24 tickSpacing = IUniswapV3Pool(pool).tickSpacing();
         populatedTicks = new PopulatedTick[](numberOfPopulatedTicks);
-        for (uint256 i = 0; i < 256; i++) {
+        for (uint24 i = 0; i < 256; i++) {
             if (bitmap & (1 << i) > 0) {
                 int24 populatedTick = ((int24(tickBitmapIndex) << 8) + int24(i)) * tickSpacing;
                 (uint128 liquidityGross, int128 liquidityNet, , , , , , ) = IUniswapV3Pool(pool).ticks(populatedTick);
