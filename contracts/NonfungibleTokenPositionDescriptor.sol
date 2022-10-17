@@ -3,7 +3,7 @@ pragma solidity ^0.8.14;
 pragma abicoder v2;
 
 import './v3-core/contracts/interfaces/IUniswapV3Pool.sol';
-import '@uniswap/lib/contracts/libraries/SafeERC20Namer.sol';
+import './lib/contracts/libraries/SafeERC20Namer.sol';
 
 import './libraries/ChainId.sol';
 import './interfaces/INonfungiblePositionManager.sol';
