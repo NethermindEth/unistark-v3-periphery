@@ -19,7 +19,7 @@ contract TestPositionNFTOwner is IERC1271 {
             s := mload(add(signature, 0x40))
             v := byte(0, mload(add(signature, 0x60)))
         }
-        if (ecrecover(hash, v, r, s) == owner) {
+        if (address(uint256(ecrecover(hash, v, r, s))) == owner) {
             return bytes4(0x1626ba7e);
         } else {
             return bytes4(0);
