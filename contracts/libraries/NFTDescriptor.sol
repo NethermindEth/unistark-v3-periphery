@@ -273,7 +273,7 @@ library NFTDescriptor {
         uint8 baseTokenDecimals,
         uint8 quoteTokenDecimals
     ) private pure returns (uint256 adjustedSqrtRatioX96) {
-        uint256 difference = abs(int256(baseTokenDecimals).sub(int256(quoteTokenDecimals)));
+        uint256 difference = abs(int256(uint256(baseTokenDecimals)).sub(int256(uint256(quoteTokenDecimals))));
         if (difference > 0 && difference <= 18) {
             if (baseTokenDecimals > quoteTokenDecimals) {
                 adjustedSqrtRatioX96 = sqrtRatioX96.mul(10**(difference.div(2)));
