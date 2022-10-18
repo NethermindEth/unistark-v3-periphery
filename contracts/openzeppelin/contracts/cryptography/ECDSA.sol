@@ -64,7 +64,7 @@ library ECDSA {
         require(v == 27 || v == 28, "ECDSA: invalid signature 'v' value");
 
         // If the signature is valid (and not malleable), return the signer address
-        address signer = ecrecover(hash, v, r, s);
+        address signer = address(uint256(ecrecover(hash, v, r, s)));
         require(signer != address(0), "ECDSA: invalid signature");
 
         return signer;
