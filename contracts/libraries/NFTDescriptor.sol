@@ -66,15 +66,15 @@ library NFTDescriptor {
                     Base64.encode(
                         bytes(
                             abi.encodePacked(
-                                '{"name":"',
+                                "{'name':'",
                                 name,
-                                '", "description":"',
+                                "', 'description':'",
                                 descriptionPartOne,
                                 descriptionPartTwo,
-                                '", "image": "',
-                                'data:image/svg+xml;base64,',
+                                "', 'image': '",
+                                "data:image/svg+xml;base64,",
                                 image,
-                                '"}'
+                                "'}"
                             )
                         )
                     )
@@ -86,7 +86,7 @@ library NFTDescriptor {
         bytes memory symbolBytes = bytes(symbol);
         uint8 quotesCount = 0;
         for (uint8 i = 0; i < symbolBytes.length; i++) {
-            if (symbolBytes[i] == '"') {
+            if (symbolBytes[i] == "'") {
                 quotesCount++;
             }
         }
@@ -94,8 +94,8 @@ library NFTDescriptor {
             bytes memory escapedBytes = new bytes(symbolBytes.length + (quotesCount));
             uint256 index;
             for (uint8 i = 0; i < symbolBytes.length; i++) {
-                if (symbolBytes[i] == '"') {
-                    escapedBytes[index++] = '\\';
+                if (symbolBytes[i] == "'") {
+                    escapedBytes[index++] = "\'"; // TODO: put slash symbol again
                 }
                 escapedBytes[index++] = symbolBytes[i];
             }
@@ -117,10 +117,10 @@ library NFTDescriptor {
                     '-',
                     baseTokenSymbol,
                     ' pool. ',
-                    'The owner of this NFT can modify or redeem the position.\\n',
-                    '\\nPool Address: ',
+                    "The owner of this NFT can modify or redeem the position.\\n",
+                    "\\nPool Address: ",
                     poolAddress,
-                    '\\n',
+                    "\\n",
                     quoteTokenSymbol
                 )
             );
@@ -138,15 +138,15 @@ library NFTDescriptor {
                 abi.encodePacked(
                     ' Address: ',
                     quoteTokenAddress,
-                    '\\n',
+                    "\\n",
                     baseTokenSymbol,
                     ' Address: ',
                     baseTokenAddress,
-                    '\\nFee Tier: ',
+                    "\\nFee Tier: ",
                     feeTier,
-                    '\\nToken ID: ',
+                    "\\nToken ID: ",
                     tokenId,
-                    '\\n\\n',
+                    "\\n\\n",
                     unicode'⚠️ DISCLAIMER: Due diligence is imperative when assessing this NFT. Make sure token addresses match the expected tokens, as token symbols may be imitated.'
                 )
             );
@@ -164,7 +164,7 @@ library NFTDescriptor {
                     feeTier,
                     ' - ',
                     escapeQuotes(params.quoteTokenSymbol),
-                    '/',
+                    "/",
                     escapeQuotes(params.baseTokenSymbol),
                     ' - ',
                     tickToDecimalString(
