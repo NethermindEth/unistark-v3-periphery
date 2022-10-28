@@ -20,6 +20,12 @@ library BytesLib {
 
         bytes memory tempBytes;
 
+        tempBytes = new bytes(_length);
+        for (uint256 i = 0; i < _length; i++) {
+            tempBytes[i] = _bytes[_start + i];
+        }
+
+        /*
         assembly {
             switch iszero(_length)
                 case 0 {
@@ -71,18 +77,27 @@ library BytesLib {
                     mstore(0x40, add(tempBytes, 0x20))
                 }
         }
+         */
 
         return tempBytes;
     }
 
     function toAddress(bytes memory _bytes, uint256 _start) internal pure returns (address) {
-        require(_start + 20 >= _start, 'toAddress_overflow');
-        require(_bytes.length >= _start + 20, 'toAddress_outOfBounds');
-        address tempAddress;
+        require(_start + 32 >= _start, 'toAddress_overflow');
+        require(_bytes.length >= _start + 32, 'toAddress_outOfBounds');
 
+        bytes memory tempBytes = new bytes(32);
+        for (uint256 i = 0; i < _start + 32; i++) {
+            tempBytes[i] = _bytes[_start + i];
+        }
+
+        address tempAddress;
+        tempAddress = address(bytes32(tempBytes));
+        /*
         assembly {
             tempAddress := div(mload(add(add(_bytes, 0x20), _start)), 0x1000000000000000000000000)
         }
+         */
 
         return tempAddress;
     }
@@ -90,11 +105,20 @@ library BytesLib {
     function toUint24(bytes memory _bytes, uint256 _start) internal pure returns (uint24) {
         require(_start + 3 >= _start, 'toUint24_overflow');
         require(_bytes.length >= _start + 3, 'toUint24_outOfBounds');
-        uint24 tempUint;
 
+        bytes memory tempBytes = new bytes(3);
+        for (uint256 i = 0; i < _start + 3; i++) {
+            tempBytes[i] = _bytes[_start + i];
+        }
+
+        uint24 tempUint;
+        tempUint = uint24(bytes3(tempBytes));
+
+        /*
         assembly {
             tempUint := mload(add(add(_bytes, 0x3), _start))
         }
+         */
 
         return tempUint;
     }

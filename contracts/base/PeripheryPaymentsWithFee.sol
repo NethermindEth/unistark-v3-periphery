@@ -13,6 +13,7 @@ import '../libraries/TransferHelper.sol';
 abstract contract PeripheryPaymentsWithFee is PeripheryPayments, IPeripheryPaymentsWithFee {
     using LowGasSafeMath for uint256;
 
+    /*
     /// @inheritdoc IPeripheryPaymentsWithFee
     function unwrapWETH9WithFee(
         uint256 amountMinimum,
@@ -32,6 +33,7 @@ abstract contract PeripheryPaymentsWithFee is PeripheryPayments, IPeripheryPayme
             TransferHelper.safeTransferETH(recipient, balanceWETH9 - feeAmount);
         }
     }
+     */
 
     /// @inheritdoc IPeripheryPaymentsWithFee
     function sweepTokenWithFee(
@@ -47,7 +49,7 @@ abstract contract PeripheryPaymentsWithFee is PeripheryPayments, IPeripheryPayme
         require(balanceToken >= amountMinimum, 'Insufficient token');
 
         if (balanceToken > 0) {
-            uint256 feeAmount = balanceToken.mul(feeBips) / 10_000;
+            uint256 feeAmount = balanceToken.mul(feeBips) / 10000;
             if (feeAmount > 0) TransferHelper.safeTransfer(token, feeRecipient, feeAmount);
             TransferHelper.safeTransfer(token, recipient, balanceToken - feeAmount);
         }
