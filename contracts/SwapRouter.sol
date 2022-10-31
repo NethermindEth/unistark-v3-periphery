@@ -10,7 +10,6 @@ import './interfaces/ISwapRouter.sol';
 import './base/PeripheryImmutableState.sol';
 import './base/PeripheryValidation.sol';
 import './base/PeripheryPaymentsWithFee.sol';
-import './base/Multicall.sol';
 import './base/SelfPermit.sol';
 import './libraries/Path.sol';
 import './libraries/PoolAddress.sol';
@@ -24,7 +23,6 @@ contract SwapRouter is
     PeripheryImmutableState,
     PeripheryValidation,
     PeripheryPaymentsWithFee,
-    Multicall,
     SelfPermit
 {
     using Path for bytes;
@@ -129,25 +127,25 @@ contract SwapRouter is
     }
 
     /// @inheritdoc ISwapRouter
-    function exactInput(ExactInputParams memory params)
+    function exactInput(bytes memory path, address recipient, uint256 deadline, uint256 amountIn, uint256 amountOutMinimum)
         external
         payable
         override
-        checkDeadline(params.deadline)
+        checkDeadline(deadline)
         returns (uint256 amountOut)
     {
         address payer = msg.sender; // msg.sender pays for the first hop
 
         while (true) {
-            bool hasMultiplePools = params.path.hasMultiplePools();
+            bool hasMultiplePools = path.hasMultiplePools();
 
             // the outputs of prior swaps become the inputs to subsequent ones
-            params.amountIn = exactInputInternal(
-                params.amountIn,
-                hasMultiplePools ? address(this) : params.recipient, // for intermediate swaps, this contract custodies
+            amountIn = exactInputInternal(
+                amountIn,
+                hasMultiplePools ? address(this) : recipient, // for intermediate swaps, this contract custodies
                 0,
                 SwapCallbackData({
-                    path: params.path.getFirstPool(), // only the first pool in the path is necessary
+                    path: path.getFirstPool(), // only the first pool in the path is necessary
                     payer: payer
                 })
             );
@@ -155,14 +153,14 @@ contract SwapRouter is
             // decide whether to continue or terminate
             if (hasMultiplePools) {
                 payer = address(this); // at this point, the caller has paid
-                params.path = params.path.skipToken();
+                path = path.skipToken();
             } else {
-                amountOut = params.amountIn;
+                amountOut = amountIn;
                 break;
             }
         }
 
-        require(amountOut >= params.amountOutMinimum, 'Too little received');
+        require(amountOut >= amountOutMinimum, 'Too little received');
     }
 
     /// @dev Performs a single exact output swap
@@ -221,24 +219,30 @@ contract SwapRouter is
     }
 
     /// @inheritdoc ISwapRouter
-    function exactOutput(ExactOutputParams calldata params)
+    function exactOutput(
+        bytes calldata path,
+        address recipient,
+        uint256 deadline,
+        uint256 amountOut,
+        uint256 amountInMaximum
+    )
         external
         payable
         override
-        checkDeadline(params.deadline)
+        checkDeadline(deadline)
         returns (uint256 amountIn)
     {
         // it's okay that the payer is fixed to msg.sender here, as they're only paying for the "final" exact output
         // swap, which happens first, and subsequent swaps are paid for within nested callback frames
         exactOutputInternal(
-            params.amountOut,
-            params.recipient,
+            amountOut,
+            recipient,
             0,
-            SwapCallbackData({path: params.path, payer: msg.sender})
+            SwapCallbackData({path: path, payer: msg.sender})
         );
 
         amountIn = amountInCached;
-        require(amountIn <= params.amountInMaximum, 'Too much requested');
+        require(amountIn <= amountInMaximum, 'Too much requested');
         amountInCached = DEFAULT_AMOUNT_IN_CACHED;
     }
 }
