@@ -5,9 +5,10 @@ pragma solidity ^0.8.14;
 library ChainId {
     /// @dev Gets the current chain ID
     /// @return chainId The current chain ID
-    function get() internal view returns (uint256 chainId) {
-        assembly {
-            chainId := chainid()
-        }
+    function get() internal pure returns (uint256 chainId) {
+        // Chain id is used to defend from simple replay attacks
+        // on EVM compatible nets. Since cairo is not one, this can
+        // be anything
+        chainId = 0;
     }
 }

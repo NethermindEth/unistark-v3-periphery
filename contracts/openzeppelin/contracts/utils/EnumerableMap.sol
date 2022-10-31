@@ -172,11 +172,11 @@ library EnumerableMap {
      * CAUTION: This function is deprecated because it requires allocating memory for the error
      * message unnecessarily. For custom revert reasons use {_tryGet}.
      */
-    function _get(Map storage map, bytes32 key, string memory errorMessage) private view returns (bytes32) {
-        uint256 keyIndex = map._indexes[key];
-        require(keyIndex != 0, errorMessage); // Equivalent to contains(map, key)
-        return map._entries[keyIndex - 1]._value; // All indexes are 1-based
-    }
+   // function _get(Map storage map, bytes32 key, string memory errorMessage) private view returns (bytes32) {
+   //     uint256 keyIndex = map._indexes[key];
+   //     require(keyIndex != 0, errorMessage); // Equivalent to contains(map, key)
+   //     return map._entries[keyIndex - 1]._value; // All indexes are 1-based
+   // }
 
     // UintToAddressMap
 
@@ -260,7 +260,7 @@ library EnumerableMap {
      * CAUTION: This function is deprecated because it requires allocating memory for the error
      * message unnecessarily. For custom revert reasons use {tryGet}.
      */
-    function get(UintToAddressMap storage map, uint256 key, string memory errorMessage) internal view returns (address) {
-        return address(uint256(_get(map._inner, bytes32(key), errorMessage)));
-    }
+    // function get(UintToAddressMap storage map, uint256 key, string memory errorMessage) internal view returns (address) {
+    //     return address(uint256(_get(map._inner, bytes32(key), errorMessage)));
+    // }
 }

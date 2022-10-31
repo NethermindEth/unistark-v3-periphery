@@ -23,16 +23,18 @@ library Address {
      *  - an address where a contract lived, but was destroyed
      * ====
      */
-    function isContract(address account) internal view returns (bool) {
-        // This method relies on extcodesize, which returns 0 for contracts in
-        // construction, since the code is only stored at the end of the
-        // constructor execution.
+    // This has no place here since StarkNet implements account abstraction and everything
+    // is a contract
+     function isContract(address account) internal view returns (bool) {
+         // This method relies on extcodesize, which returns 0 for contracts in
+         // construction, since the code is only stored at the end of the
+         // constructor execution.
 
-        uint256 size;
-        // solhint-disable-next-line no-inline-assembly
-        assembly { size := extcodesize(account) }
-        return size > 0;
-    }
+         uint256 size;
+         // solhint-disable-next-line no-inline-assembly
+         assembly { size := extcodesize(account) }
+         return size > 0;
+     }
 
     /**
      * @dev Replacement for Solidity's `transfer`: sends `amount` wei to
