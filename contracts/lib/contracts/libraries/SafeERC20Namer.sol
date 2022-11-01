@@ -60,21 +60,21 @@ library SafeERC20Namer {
     }
 
     // calls an external view token contract method that returns a symbol or name, and parses the output into a string
-    function callAndParseStringReturn(address token, bytes4 selector) private view returns (string memory) {
-        (bool success, bytes memory data) = token.staticcall(abi.encodeWithSelector(selector));
-        // if not implemented, or returns empty data, return empty string
-        if (!success || data.length == 0) {
-            return '';
-        }
-        // bytes32 data always has length 32
-        if (data.length == 32) {
-            bytes32 decoded = abi.decode(data, (bytes32));
-            return bytes32ToString(decoded);
-        } else if (data.length > 64) {
-            return abi.decode(data, (string));
-        }
-        return '';
-    }
+    // function callAndParseStringReturn(address token, bytes4 selector) private view returns (string memory) {
+    //     (bool success, bytes memory data) = token.staticcall(abi.encodeWithSelector(selector));
+    //     // if not implemented, or returns empty data, return empty string
+    //     if (!success || data.length == 0) {
+    //         return '';
+    //     }
+    //     // bytes32 data always has length 32
+    //     if (data.length == 32) {
+    //         bytes32 decoded = abi.decode(data, (bytes32));
+    //         return bytes32ToString(decoded);
+    //     } else if (data.length > 64) {
+    //         return abi.decode(data, (string));
+    //     }
+    //     return '';
+    // }
 
     // attempts to extract the token symbol. if it does not implement symbol, returns a symbol derived from the address
     function tokenSymbol(address token) internal view returns (string memory) {
