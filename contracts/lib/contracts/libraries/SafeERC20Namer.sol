@@ -4,6 +4,12 @@ pragma solidity >=0.5.0;
 
 import './AddressStringUtil.sol';
 
+interface INamedERC20 {
+    function symbol() external view returns (string memory);
+
+    function name() external view returns  (string memory);
+}
+
 // produces token descriptors from inconsistent or absent ERC20 symbol implementations that can return string or bytes32
 // this library will always produce a string symbol to represent the token
 library SafeERC20Namer {
@@ -73,7 +79,7 @@ library SafeERC20Namer {
     // attempts to extract the token symbol. if it does not implement symbol, returns a symbol derived from the address
     function tokenSymbol(address token) internal view returns (string memory) {
         // 0x95d89b41 = bytes4(keccak256("symbol()"))
-        string memory symbol = callAndParseStringReturn(token, 0x95d89b41);
+        string memory symbol = INamedERC20(token).symbol();
         if (bytes(symbol).length == 0) {
             // fallback to 6 uppercase hex of address
             return addressToSymbol(token);
@@ -84,7 +90,7 @@ library SafeERC20Namer {
     // attempts to extract the token name. if it does not implement name, returns a name derived from the address
     function tokenName(address token) internal view returns (string memory) {
         // 0x06fdde03 = bytes4(keccak256("name()"))
-        string memory name = callAndParseStringReturn(token, 0x06fdde03);
+        string memory name = INamedERC20(token).name();
         if (bytes(name).length == 0) {
             // fallback to full hex of address
             return addressToName(token);
