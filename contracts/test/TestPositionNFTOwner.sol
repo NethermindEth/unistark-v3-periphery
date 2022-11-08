@@ -11,14 +11,17 @@ contract TestPositionNFTOwner is IERC1271 {
     }
 
     function isValidSignature(bytes32 hash, bytes memory signature) external view override returns (bytes4 magicValue) {
-        bytes32 r;
-        bytes32 s;
-        uint8 v;
-        assembly {
-            r := mload(add(signature, 0x20))
-            s := mload(add(signature, 0x40))
-            v := byte(0, mload(add(signature, 0x60)))
+        bytes memory tempR = new bytes(32);
+        bytes memory tempS = new bytes(32);
+        for (uint index = 0; index < 32; index++) {
+            tempR[index] = signature[32 + index];
+            tempS[index] = signature[64 + index];
         }
+
+        bytes32 r = bytes32(tempR);
+        bytes32 s = bytes32(tempS);
+        uint8 v = uint8(signature[96]);
+
         if (address(uint256(ecrecover(hash, v, r, s))) == owner) {
             return bytes4(0x1626ba7e);
         } else {

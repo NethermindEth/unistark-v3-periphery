@@ -151,7 +151,9 @@ contract ERC20 is Context, IERC20 {
      */
     function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
         _transfer(sender, recipient, amount);
-        _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "ERC20: transfer amount exceeds allowance"));
+        uint256 currentAllowance = _allowances[sender][_msgSender()];
+        require(currentAllowance >= amount, "ERC20: transfer amount exceeds allowance");
+        _approve(sender, _msgSender(), currentAllowance - amount);
         return true;
     }
 
@@ -187,7 +189,9 @@ contract ERC20 is Context, IERC20 {
      * `subtractedValue`.
      */
     function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].sub(subtractedValue, "ERC20: decreased allowance below zero"));
+        uint256 totalAmount = _allowances[_msgSender()][spender];
+        require(subtractedValue <= totalAmount, "ERC20: decreaced allowance below zero");
+        _approve(_msgSender(), spender, totalAmount - subtractedValue);
         return true;
     }
 
@@ -211,7 +215,9 @@ contract ERC20 is Context, IERC20 {
 
         _beforeTokenTransfer(sender, recipient, amount);
 
-        _balances[sender] = _balances[sender].sub(amount, "ERC20: transfer amount exceeds balance");
+        uint256 currentBalance = _balances[sender];
+        require(amount <= currentBalance,"ERC20: transfer amount exceeds balance");
+        _balances[sender] = currentBalance - amount;
         _balances[recipient] = _balances[recipient].add(amount);
         emit Transfer(sender, recipient, amount);
     }
@@ -251,7 +257,9 @@ contract ERC20 is Context, IERC20 {
 
         _beforeTokenTransfer(account, address(0), amount);
 
-        _balances[account] = _balances[account].sub(amount, "ERC20: burn amount exceeds balance");
+        uint256 currentBalance = _balances[account];
+        require(currentBalance >= amount, "ERC20: burn amount exceeds balance");
+        _balances[account] = currentBalance - amount;
         _totalSupply = _totalSupply.sub(amount);
         emit Transfer(account, address(0), amount);
     }

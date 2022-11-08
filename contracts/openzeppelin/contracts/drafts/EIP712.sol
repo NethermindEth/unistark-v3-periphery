@@ -101,8 +101,6 @@ abstract contract EIP712 {
     function _getChainId() private view returns (uint256 chainId) {
         this; // silence state mutability warning without generating bytecode - see https://github.com/ethereum/solidity/issues/2691
         // solhint-disable-next-line no-inline-assembly
-        assembly {
-            chainId := chainid()
-        }
+        chainId = 0;
     }
 }
