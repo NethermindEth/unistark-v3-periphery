@@ -71,10 +71,11 @@ contract Quoter is IQuoter, IUniswapV3SwapCallback, PeripheryImmutableState {
     function parseRevertReason(bytes memory reason) private pure returns (uint256) {
         if (reason.length != 32) {
             if (reason.length < 68) revert('Unexpected error');
-            assembly {
-                reason := add(reason, 0x04)
-            }
-            revert(abi.decode(reason, (string)));
+            // assembly {
+            //     reason := add(reason, 0x04)
+            // }
+            // revert(abi.decode(reason, (string)));
+            revert();
         }
         return abi.decode(reason, (uint256));
     }
