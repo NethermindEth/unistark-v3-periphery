@@ -12,7 +12,6 @@ import './libraries/PositionKey.sol';
 import './libraries/PoolAddress.sol';
 import './base/LiquidityManagement.sol';
 import './base/PeripheryImmutableState.sol';
-import './base/Multicall.sol';
 import './base/ERC721Permit.sol';
 import './base/PeripheryValidation.sol';
 import './base/SelfPermit.sol';
@@ -22,7 +21,6 @@ import './base/PoolInitializer.sol';
 /// @notice Wraps Uniswap V3 positions in the ERC721 non-fungible token interface
 contract NonfungiblePositionManager is
     INonfungiblePositionManager,
-    Multicall,
     ERC721Permit,
     PeripheryImmutableState,
     PoolInitializer,

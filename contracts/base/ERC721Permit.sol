@@ -2,7 +2,7 @@
 pragma solidity ^0.8.14;
 
 import '../openzeppelin/contracts/token/ERC721/ERC721.sol';
-import '../openzeppelin/contracts/utils/Address.sol';
+// import '../openzeppelin/contracts/utils/Address.sol';
 
 import '../libraries/ChainId.sol';
 import '../interfaces/external/IERC1271.sol';
@@ -36,7 +36,7 @@ abstract contract ERC721Permit is BlockTimestamp, ERC721, IERC721Permit {
         return
             keccak256(
                 abi.encode(
-                    // keccak256('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)')
+                    // keccak256('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract))
                     0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f,
                     nameHash,
                     versionHash,
@@ -73,13 +73,7 @@ abstract contract ERC721Permit is BlockTimestamp, ERC721, IERC721Permit {
         address owner = ownerOf(tokenId);
         require(spender != owner, 'ERC721Permit: approval to current owner');
 
-        if (Address.isContract(owner)) {
-            require(IERC1271(owner).isValidSignature(digest, abi.encodePacked(r, s, v)) == 0x1626ba7e, 'Unauthorized');
-        } else {
-            address recoveredAddress = address(uint256(ecrecover(digest, v, r, s)));
-            require(recoveredAddress != address(0), 'Invalid signature');
-            require(recoveredAddress == owner, 'Unauthorized');
-        }
+        require(IERC1271(owner).isValidSignature(digest, abi.encodePacked(r, s, v)) == 0x1626ba7e, 'Unauthorized');
 
         _approve(spender, tokenId);
     }
