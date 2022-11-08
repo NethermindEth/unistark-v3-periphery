@@ -90,7 +90,8 @@ contract Quoter is IQuoter, IUniswapV3SwapCallback, PeripheryImmutableState {
     ) public override returns (uint256 amountOut) {
         bool zeroForOne = tokenIn < tokenOut;
 
-        try
+
+        // try
             getPool(tokenIn, tokenOut, fee).swap(
                 address(this), // address(0) might cause issues with some tokens
                 zeroForOne,
@@ -99,10 +100,10 @@ contract Quoter is IQuoter, IUniswapV3SwapCallback, PeripheryImmutableState {
                     ? (zeroForOne ? TickMath.MIN_SQRT_RATIO + 1 : TickMath.MAX_SQRT_RATIO - 1)
                     : sqrtPriceLimitX96,
                 abi.encodePacked(tokenIn, fee, tokenOut)
-            )
-        {} catch (bytes memory reason) {
-            return parseRevertReason(reason);
-        }
+            );
+        // {} catch (bytes memory reason) {
+            // return parseRevertReason(reason);
+        // }
     }
 
     /// @inheritdoc IQuoter
@@ -136,7 +137,7 @@ contract Quoter is IQuoter, IUniswapV3SwapCallback, PeripheryImmutableState {
 
         // if no price limit has been specified, cache the output amount for comparison in the swap callback
         if (sqrtPriceLimitX96 == 0) amountOutCached = amountOut;
-        try
+        // try
             getPool(tokenIn, tokenOut, fee).swap(
                 address(this), // address(0) might cause issues with some tokens
                 zeroForOne,
@@ -145,11 +146,11 @@ contract Quoter is IQuoter, IUniswapV3SwapCallback, PeripheryImmutableState {
                     ? (zeroForOne ? TickMath.MIN_SQRT_RATIO + 1 : TickMath.MAX_SQRT_RATIO - 1)
                     : sqrtPriceLimitX96,
                 abi.encodePacked(tokenOut, fee, tokenIn)
-            )
-        {} catch (bytes memory reason) {
-            if (sqrtPriceLimitX96 == 0) delete amountOutCached; // clear cache
-            return parseRevertReason(reason);
-        }
+            );
+        // {} catch (bytes memory reason) {
+        //     if (sqrtPriceLimitX96 == 0) delete amountOutCached; // clear cache
+        //     return parseRevertReason(reason);
+        // }
     }
 
     /// @inheritdoc IQuoter
