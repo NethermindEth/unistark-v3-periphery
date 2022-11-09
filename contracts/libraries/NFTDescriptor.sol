@@ -140,7 +140,7 @@ library NFTDescriptor {
             uint256 index;
             for (uint8 i = 0; i < symbolBytes.length; i++) {
                 if (symbolBytes[i] == "'") {
-                    escapedBytes[index++] = "\'"; // TODO: put slash symbol again
+                    escapedBytes[index++] = ""; // TODO: put slash symbol again
                 }
                 escapedBytes[index++] = symbolBytes[i];
             }
@@ -162,10 +162,10 @@ library NFTDescriptor {
                     '-',
                     baseTokenSymbol,
                     ' pool. ',
-                    "The owner of this NFT can modify or redeem the position.\\n",
-                    "\\nPool Address: ",
+                    "The owner of this NFT can modify or redeem the position.",
+                    "Pool Address: ",
                     poolAddress,
-                    "\\n",
+                    "",
                     quoteTokenSymbol
                 )
             );
@@ -183,15 +183,15 @@ library NFTDescriptor {
                 abi.encodePacked(
                     ' Address: ',
                     quoteTokenAddress,
-                    "\\n",
+                    "",
                     baseTokenSymbol,
                     ' Address: ',
                     baseTokenAddress,
-                    "\\nFee Tier: ",
+                    "Fee Tier: ",
                     feeTier,
-                    "\\nToken ID: ",
+                    "Token ID: ",
                     tokenId,
-                    "\\n\\n",
+                    "",
                     unicode'⚠️ DISCLAIMER: Due diligence is imperative when assessing this NFT. Make sure token addresses match the expected tokens, as token symbols may be imitated.'
                 )
             );
