@@ -9,12 +9,40 @@ import '../libraries/HexStrings.sol';
 contract NFTDescriptorTest {
     using HexStrings for uint256;
 
-    function constructTokenURI(NFTDescriptor.ConstructTokenURIParams calldata params)
+    function constructTokenURI(
+        uint256 tokenId,
+        address quoteTokenAddress,
+        address baseTokenAddress,
+        string calldata quoteTokenSymbol,
+        string calldata baseTokenSymbol,
+        uint8 quoteTokenDecimals,
+        uint8 baseTokenDecimals,
+        bool flipRatio,
+        int24 tickLower,
+        int24 tickUpper,
+        int24 tickCurrent,
+        int24 tickSpacing,
+        uint24 fee,
+        address poolAddress)
         public
         pure
         returns (string memory)
     {
-        return NFTDescriptor.constructTokenURI(params);
+        return NFTDescriptor.constructTokenURI(
+            tokenId,
+            quoteTokenAddress,
+            baseTokenAddress,
+            quoteTokenSymbol,
+            baseTokenSymbol,
+            quoteTokenDecimals,
+            baseTokenDecimals,
+            flipRatio,
+            tickLower,
+            tickUpper,
+            tickCurrent,
+            tickSpacing,
+            fee,
+            poolAddress);
     }
 
     function tickToDecimalString(
@@ -43,8 +71,37 @@ contract NFTDescriptorTest {
         return NFTDescriptor.addressToString(_address);
     }
 
-    function generateSVGImage(NFTDescriptor.ConstructTokenURIParams memory params) public pure returns (string memory) {
-        return NFTDescriptor.generateSVGImage(params);
+    function generateSVGImage(
+        uint256 tokenId,
+        address quoteTokenAddress,
+        address baseTokenAddress,
+        string calldata quoteTokenSymbol,
+        string calldata baseTokenSymbol,
+        uint8 quoteTokenDecimals,
+        uint8 baseTokenDecimals,
+        bool flipRatio,
+        int24 tickLower,
+        int24 tickUpper,
+        int24 tickCurrent,
+        int24 tickSpacing,
+        uint24 fee,
+        address poolAddress
+        ) public pure returns (string memory) {
+        return NFTDescriptor.generateSVGImage(
+            tokenId,
+            quoteTokenAddress,
+            baseTokenAddress,
+            quoteTokenSymbol,
+            baseTokenSymbol,
+            quoteTokenDecimals,
+            baseTokenDecimals,
+            flipRatio,
+            tickLower,
+            tickUpper,
+            tickCurrent,
+            tickSpacing,
+            fee,
+            poolAddress);
     }
 
     function tokenToColorHex(address token, uint256 offset) public pure returns (string memory) {
