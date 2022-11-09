@@ -28,30 +28,4 @@ contract PositionValueTest {
     {
         return PositionValue.fees(nft, tokenId);
     }
-
-    function totalGas(
-        INonfungiblePositionManager nft,
-        uint256 tokenId,
-        uint160 sqrtRatioX96
-    ) external view returns (uint256) {
-        uint256 gasBefore = gasleft();
-        PositionValue.total(nft, tokenId, sqrtRatioX96);
-        return gasBefore - gasleft();
-    }
-
-    function principalGas(
-        INonfungiblePositionManager nft,
-        uint256 tokenId,
-        uint160 sqrtRatioX96
-    ) external view returns (uint256) {
-        uint256 gasBefore = gasleft();
-        PositionValue.principal(nft, tokenId, sqrtRatioX96);
-        return gasBefore - gasleft();
-    }
-
-    function feesGas(INonfungiblePositionManager nft, uint256 tokenId) external view returns (uint256) {
-        uint256 gasBefore = gasleft();
-        PositionValue.fees(nft, tokenId);
-        return gasBefore - gasleft();
-    }
 }

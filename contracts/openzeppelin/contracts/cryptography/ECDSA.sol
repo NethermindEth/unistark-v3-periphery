@@ -29,19 +29,22 @@ library ECDSA {
             revert("ECDSA: invalid signature length");
         }
 
+        bytes memory tempR = new bytes(32);
+        bytes memory tempS = new bytes(32);
+        for (uint index = 0; index < 32; index++) {
+            tempR[index] = signature[32 + index];
+            tempS[index] = signature[64 + index];
+        }
+
+
         // Divide the signature in r, s and v variables
-        bytes32 r;
-        bytes32 s;
-        uint8 v;
+        bytes32 r = bytes32(tempR);
+        bytes32 s = bytes32(tempS);
+        uint8 v = uint8(signature[96]);
 
         // ecrecover takes the signature parameters, and the only way to get them
         // currently is to use assembly.
         // solhint-disable-next-line no-inline-assembly
-        assembly {
-            r := mload(add(signature, 0x20))
-            s := mload(add(signature, 0x40))
-            v := byte(0, mload(add(signature, 0x60)))
-        }
 
         return recover(hash, v, r, s);
     }

@@ -49,19 +49,21 @@ contract Quoter is IQuoter, IUniswapV3SwapCallback, PeripheryImmutableState {
                 ? (tokenIn < tokenOut, uint256(amount0Delta), uint256(-amount1Delta))
                 : (tokenOut < tokenIn, uint256(amount1Delta), uint256(-amount0Delta));
         if (isExactInput) {
-            assembly {
-                let ptr := mload(0x40)
-                mstore(ptr, amountReceived)
-                revert(ptr, 32)
-            }
+            revert();
+            // assembly {
+            //     let ptr := mload(0x40)
+            //     mstore(ptr, amountReceived)
+            //     revert(ptr, 32)
+            // }
         } else {
             // if the cache has been populated, ensure that the full output amount has been received
             if (amountOutCached != 0) require(amountReceived == amountOutCached);
-            assembly {
-                let ptr := mload(0x40)
-                mstore(ptr, amountToPay)
-                revert(ptr, 32)
-            }
+            revert();
+            // assembly {
+            //     let ptr := mload(0x40)
+            //     mstore(ptr, amountToPay)
+            //     revert(ptr, 32)
+            // }
         }
     }
 
@@ -69,10 +71,11 @@ contract Quoter is IQuoter, IUniswapV3SwapCallback, PeripheryImmutableState {
     function parseRevertReason(bytes memory reason) private pure returns (uint256) {
         if (reason.length != 32) {
             if (reason.length < 68) revert('Unexpected error');
-            assembly {
-                reason := add(reason, 0x04)
-            }
-            revert(abi.decode(reason, (string)));
+            // assembly {
+            //     reason := add(reason, 0x04)
+            // }
+            // revert(abi.decode(reason, (string)));
+            revert();
         }
         return abi.decode(reason, (uint256));
     }
@@ -87,7 +90,8 @@ contract Quoter is IQuoter, IUniswapV3SwapCallback, PeripheryImmutableState {
     ) public override returns (uint256 amountOut) {
         bool zeroForOne = tokenIn < tokenOut;
 
-        try
+
+        // try
             getPool(tokenIn, tokenOut, fee).swap(
                 address(this), // address(0) might cause issues with some tokens
                 zeroForOne,
@@ -96,10 +100,10 @@ contract Quoter is IQuoter, IUniswapV3SwapCallback, PeripheryImmutableState {
                     ? (zeroForOne ? TickMath.MIN_SQRT_RATIO + 1 : TickMath.MAX_SQRT_RATIO - 1)
                     : sqrtPriceLimitX96,
                 abi.encodePacked(tokenIn, fee, tokenOut)
-            )
-        {} catch (bytes memory reason) {
-            return parseRevertReason(reason);
-        }
+            );
+        // {} catch (bytes memory reason) {
+            // return parseRevertReason(reason);
+        // }
     }
 
     /// @inheritdoc IQuoter
@@ -133,7 +137,7 @@ contract Quoter is IQuoter, IUniswapV3SwapCallback, PeripheryImmutableState {
 
         // if no price limit has been specified, cache the output amount for comparison in the swap callback
         if (sqrtPriceLimitX96 == 0) amountOutCached = amountOut;
-        try
+        // try
             getPool(tokenIn, tokenOut, fee).swap(
                 address(this), // address(0) might cause issues with some tokens
                 zeroForOne,
@@ -142,11 +146,11 @@ contract Quoter is IQuoter, IUniswapV3SwapCallback, PeripheryImmutableState {
                     ? (zeroForOne ? TickMath.MIN_SQRT_RATIO + 1 : TickMath.MAX_SQRT_RATIO - 1)
                     : sqrtPriceLimitX96,
                 abi.encodePacked(tokenOut, fee, tokenIn)
-            )
-        {} catch (bytes memory reason) {
-            if (sqrtPriceLimitX96 == 0) delete amountOutCached; // clear cache
-            return parseRevertReason(reason);
-        }
+            );
+        // {} catch (bytes memory reason) {
+        //     if (sqrtPriceLimitX96 == 0) delete amountOutCached; // clear cache
+        //     return parseRevertReason(reason);
+        // }
     }
 
     /// @inheritdoc IQuoter

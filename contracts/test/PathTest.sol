@@ -27,11 +27,4 @@ contract PathTest {
     function skipToken(bytes memory path) public pure returns (bytes memory) {
         return Path.skipToken(path);
     }
-
-    // gas funcs
-    function getGasCostOfDecodeFirstPool(bytes memory path) public view returns (uint256) {
-        uint256 gasBefore = gasleft();
-        Path.decodeFirstPool(path);
-        return gasBefore - gasleft();
-    }
 }
