@@ -8,15 +8,15 @@
 
 ## Errors
 ### Solidity version
-All pragma solidity versions were set to ^0.8.14. As result some minor change were needed:
-- cast between int and uint variables need them to have same bits amount so perhaps an increase (or decrease) of bits is needed first. Files changed
+All pragma solidity versions were set to ^0.8.14. As result some changes were required:
+- Casting between different size + different types variables. Solidity 0.8.14 requires that when casting between different data types that they have the same size (e.g. :heavy_check_mark: `address` to `uint160` or `int128` to `uint128` but not :x: `int8` to `uint16` ) 
     - `contracts/libraries/OracleLibrary.sol`
     - `contracts/libraries/PoolTicksCounter.sol`
     - `contracts/libraries/NFTDescriptor.sol`
     - `contracts/libraries/NFTSVG.sol`
     - `contracts/openzeppelin/contracts/utils/EnumerableMap.sol`
     - `contracts/openzeppelin/contracts/utils/EnumerableSet.sol`
-- address need to be created from uint256 types and with address constructor. Also related is that ecrecover function from Nethersolc returning 160 bits. Files changed:
+- Warp uses a modified version of `solc 0.8.14`. `address` is 256 bits in size, so conversion to `uint160`  or vice versa are invalided now.  `ecrecover` function returns a `uint160` instead of an `address`. Files changed:
     - `contracts/libraries/PoolAddress.sol`
     - `contracts/openzeppelin/contracts/utils/EnumerableMap.sol`
     - `contracts/openzeppelin/contracts/utils/EnumerableSet.sol`
@@ -28,12 +28,12 @@ All pragma solidity versions were set to ^0.8.14. As result some minor change we
     - `contracts/openzeppelin/contracts/math/SafeMath.sol`
 
 ### Solc errors
-Solc has a known trouble dealing with double-quote strings inside single-quote strings('this should "be ok" but "its not"'), also with escape characters('\\n'). An issue was opened in solc repo but until we have a feedback we need to go around them. Files updated were:
+Warp uses JavaScript library `solc-typed-ast` to produce a Solidity AST. It appears it  has a bug when  dealing with double-quote strings inside single-quote strings('this should "be ok" but "its not"'), as well as with escape characters('\\n'). Files updated were:
 - `contracts/libraries/NFTDescriptor.sol`
 - `contracts/libraries/NFTSVG.sol`
 
 ### Currency
-Cairo doesn't have it's own currency natively instead we have the WarpEth token, the logic needs to be changed to use it. Files updated:
+Cairo doesn't have it's own native currency written as part of the protocol (Ethereum has ETH) instead it uses Wrapped ETH token. Changes were needed to accommodate for this. Files updated:
 - `contracts/base/PeripheryPayments.sol`
 - `contracts/base/PeripheryPaymentsWithFee.sol`
 - `contracts/base/PeripheryPayments.sol`
@@ -43,7 +43,8 @@ Cairo doesn't have it's own currency natively instead we have the WarpEth token,
 - `contracts/openzeppelin/contracts/token/ERC20/ERC20.sol`
 
 ### Address
-Cairo doesn't distinguish between address types so openzeppelin address isn't needed, neither any check about it. Files:
+
+Cairo doesn't distinguish between address types so OpenZeppelin address isn't needed, neither any check about it. Files:
 - `contracts/base/ERC721Permit.sol`
 - `contracts/openzeppelin/contracts/token/ERC721/ERC721.sol`
 
