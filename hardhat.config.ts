@@ -1,9 +1,14 @@
+import { freedom } from 'hardhat-warp/src/index_before'
+freedom(require)
+
 import '@nomiclabs/hardhat-ethers'
 import '@nomiclabs/hardhat-etherscan'
 import '@nomiclabs/hardhat-waffle'
-import 'hardhat-typechain'
+import '@typechain/hardhat'
 import 'hardhat-watcher'
 import 'hardhat-warp'
+
+// import "mocha-progress-reporter"
 
 const WARP_COMPILER_SETTINGS = {
   version: '0.8.14',
@@ -82,4 +87,8 @@ export default {
       verbose: true,
     },
   },
+  // mocha {
+  // timeout: 100000000,
+  // reporter: 'mocha-progress-reporter'
+  // }
 }
