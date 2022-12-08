@@ -3,17 +3,17 @@ import { ethers } from 'hardhat'
 import { v3RouterFixture } from './externalFixtures'
 import { constants } from 'ethers'
 import {
-  IWETH9,
+  WETH9,
   MockTimeNonfungiblePositionManager,
   MockTimeSwapRouter,
   NonfungibleTokenPositionDescriptor,
   TestERC20,
-  IUniswapV3Factory,
-} from '../../typechain'
+  UniswapV3Factory,
+} from '../../typechain-types'
 
 const completeFixture: Fixture<{
-  weth9: IWETH9
-  factory: IUniswapV3Factory
+  weth9: WETH9
+  factory: UniswapV3Factory
   router: MockTimeSwapRouter
   nft: MockTimeNonfungiblePositionManager
   nftDescriptor: NonfungibleTokenPositionDescriptor
