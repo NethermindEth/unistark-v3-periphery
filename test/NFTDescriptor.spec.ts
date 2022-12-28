@@ -2,7 +2,7 @@ import { BigNumber, constants, Wallet } from 'ethers'
 import { encodePriceSqrt } from './shared/encodePriceSqrt'
 import { waffle, ethers } from 'hardhat'
 import { expect } from './shared/expect'
-import { TestERC20Metadata, NFTDescriptorTest } from '../typechain'
+import { TestERC20Metadata, NFTDescriptorTest } from '../typechain-types'
 import { Fixture } from 'ethereum-waffle'
 import { FeeAmount, TICK_SPACINGS } from './shared/constants'
 import snapshotGasCost from './shared/snapshotGasCost'
@@ -98,7 +98,7 @@ describe('NFTDescriptor', () => {
 
     it('returns the valid JSON string with min and max ticks', async () => {
       const json = extractJSONFromURI(
-        await nftDescriptor.constructTokenURI({
+        await nftDescriptor.constructTokenURI(
           tokenId,
           baseTokenAddress,
           quoteTokenAddress,
@@ -112,8 +112,8 @@ describe('NFTDescriptor', () => {
           tickCurrent,
           tickSpacing,
           fee,
-          poolAddress,
-        })
+          poolAddress
+        )
       )
 
       const tokenUri = constructTokenMetadata(
@@ -142,7 +142,7 @@ describe('NFTDescriptor', () => {
       fee = 3000
 
       const json = extractJSONFromURI(
-        await nftDescriptor.constructTokenURI({
+        await nftDescriptor.constructTokenURI(
           tokenId,
           baseTokenAddress,
           quoteTokenAddress,
@@ -156,8 +156,8 @@ describe('NFTDescriptor', () => {
           tickCurrent,
           tickSpacing,
           fee,
-          poolAddress,
-        })
+          poolAddress
+        )
       )
 
       const tokenMetadata = constructTokenMetadata(
@@ -182,7 +182,7 @@ describe('NFTDescriptor', () => {
     it('returns valid JSON when token symbols contain quotes', async () => {
       quoteTokenSymbol = '"TES"T1"'
       const json = extractJSONFromURI(
-        await nftDescriptor.constructTokenURI({
+        await nftDescriptor.constructTokenURI(
           tokenId,
           baseTokenAddress,
           quoteTokenAddress,
@@ -196,8 +196,8 @@ describe('NFTDescriptor', () => {
           tickCurrent,
           tickSpacing,
           fee,
-          poolAddress,
-        })
+          poolAddress
+        )
       )
 
       const tokenMetadata = constructTokenMetadata(
@@ -226,7 +226,7 @@ describe('NFTDescriptor', () => {
         tickUpper = 10
 
         const json = extractJSONFromURI(
-          await nftDescriptor.constructTokenURI({
+          await nftDescriptor.constructTokenURI(
             tokenId,
             baseTokenAddress,
             quoteTokenAddress,
@@ -240,8 +240,8 @@ describe('NFTDescriptor', () => {
             tickCurrent,
             tickSpacing,
             fee,
-            poolAddress,
-          })
+            poolAddress
+          )
         )
 
         const tokenMetadata = constructTokenMetadata(
@@ -267,7 +267,7 @@ describe('NFTDescriptor', () => {
         flipRatio = true
 
         const json = extractJSONFromURI(
-          await nftDescriptor.constructTokenURI({
+          await nftDescriptor.constructTokenURI(
             tokenId,
             baseTokenAddress,
             quoteTokenAddress,
@@ -281,8 +281,8 @@ describe('NFTDescriptor', () => {
             tickCurrent,
             tickSpacing,
             fee,
-            poolAddress,
-          })
+            poolAddress
+          )
         )
 
         const tokenMetadata = constructTokenMetadata(
@@ -305,26 +305,26 @@ describe('NFTDescriptor', () => {
       })
     })
 
-    it('gas', async () => {
-      await snapshotGasCost(
-        nftDescriptor.getGasCostOfConstructTokenURI({
-          tokenId,
-          baseTokenAddress,
-          quoteTokenAddress,
-          baseTokenSymbol,
-          quoteTokenSymbol,
-          baseTokenDecimals,
-          quoteTokenDecimals,
-          flipRatio,
-          tickLower,
-          tickUpper,
-          tickCurrent,
-          tickSpacing,
-          fee,
-          poolAddress,
-        })
-      )
-    })
+    // it('gas', async () => {
+    //   await snapshotGasCost(
+    //     nftDescriptor.getGasCostOfConstructTokenURI({
+    //       tokenId,
+    //       baseTokenAddress,
+    //       quoteTokenAddress,
+    //       baseTokenSymbol,
+    //       quoteTokenSymbol,
+    //       baseTokenDecimals,
+    //       quoteTokenDecimals,
+    //       flipRatio,
+    //       tickLower,
+    //       tickUpper,
+    //       tickCurrent,
+    //       tickSpacing,
+    //       fee,
+    //       poolAddress,
+    //     })
+    //   )
+    // })
 
     it('snapshot matches', async () => {
       // get snapshot with super rare special sparkle
@@ -341,7 +341,7 @@ describe('NFTDescriptor', () => {
       quoteTokenSymbol = 'UNI'
       baseTokenSymbol = 'WETH'
       expect(
-        await nftDescriptor.constructTokenURI({
+        await nftDescriptor.constructTokenURI(
           tokenId,
           quoteTokenAddress,
           baseTokenAddress,
@@ -355,8 +355,8 @@ describe('NFTDescriptor', () => {
           tickCurrent,
           tickSpacing,
           fee,
-          poolAddress,
-        })
+          poolAddress
+        )
       ).toMatchSnapshot()
     })
   })
@@ -828,7 +828,7 @@ describe('NFTDescriptor', () => {
     })
 
     it('matches the current snapshot', async () => {
-      const svg = await nftDescriptor.generateSVGImage({
+      const svg = await nftDescriptor.generateSVGImage(
         tokenId,
         baseTokenAddress,
         quoteTokenAddress,
@@ -842,15 +842,15 @@ describe('NFTDescriptor', () => {
         tickCurrent,
         tickSpacing,
         fee,
-        poolAddress,
-      })
+        poolAddress
+      )
 
       expect(svg).toMatchSnapshot()
       fs.writeFileSync('./test/__snapshots__/NFTDescriptor.svg', svg)
     })
 
     it('returns a valid SVG', async () => {
-      const svg = await nftDescriptor.generateSVGImage({
+      const svg = await nftDescriptor.generateSVGImage(
         tokenId,
         baseTokenAddress,
         quoteTokenAddress,
@@ -864,8 +864,8 @@ describe('NFTDescriptor', () => {
         tickCurrent,
         tickSpacing,
         fee,
-        poolAddress,
-      })
+        poolAddress
+      )
       expect(isSvg(svg)).to.eq(true)
     })
   })

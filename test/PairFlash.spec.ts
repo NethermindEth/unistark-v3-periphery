@@ -9,10 +9,10 @@ import {
   TestERC20,
   TestERC20Metadata,
   IUniswapV3Factory,
-  NFTDescriptor,
+  // NFTDescriptor,
   Quoter,
   SwapRouter,
-} from '../typechain'
+} from '../typechain-types'
 import completeFixture from './shared/completeFixture'
 import { FeeAmount, MaxUint128, TICK_SPACINGS } from './shared/constants'
 import { encodePriceSqrt } from './shared/encodePriceSqrt'

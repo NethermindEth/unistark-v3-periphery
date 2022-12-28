@@ -8,7 +8,7 @@ import {
   IUniswapV3Pool,
   TestERC20,
   IUniswapV3Factory,
-} from '../typechain'
+} from '../typechain-types'
 import { FeeAmount, MaxUint128, TICK_SPACINGS } from './shared/constants'
 import { getMaxTick, getMinTick } from './shared/ticks'
 import { encodePriceSqrt } from './shared/encodePriceSqrt'
@@ -103,22 +103,22 @@ describe('PositionValue', async () => {
       await tokens[1].approve(router.address, swapAmount)
 
       // accmuluate token0 fees
-      await router.exactInput({
-        recipient: wallets[0].address,
-        deadline: 1,
-        path: encodePath([tokens[0].address, tokens[1].address], [FeeAmount.MEDIUM]),
-        amountIn: swapAmount,
-        amountOutMinimum: 0,
-      })
+      await router.exactInput(
+        encodePath([tokens[0].address, tokens[1].address], [FeeAmount.MEDIUM]),
+        wallets[0].address,
+        1,
+        swapAmount,
+        0
+      )
 
       // accmuluate token1 fees
-      await router.exactInput({
-        recipient: wallets[0].address,
-        deadline: 1,
-        path: encodePath([tokens[1].address, tokens[0].address], [FeeAmount.MEDIUM]),
-        amountIn: swapAmount,
-        amountOutMinimum: 0,
-      })
+      await router.exactInput(
+        encodePath([tokens[1].address, tokens[0].address], [FeeAmount.MEDIUM]),
+        wallets[0].address,
+        1,
+        swapAmount,
+        0
+      )
 
       sqrtRatioX96 = (await pool.slot0()).sqrtPriceX96
     })
@@ -132,9 +132,10 @@ describe('PositionValue', async () => {
       expect(total[1]).to.equal(principal[1].add(fees[1]))
     })
 
-    it('gas', async () => {
-      await snapshotGasCost(positionValue.totalGas(nft.address, 1, sqrtRatioX96))
-    })
+    // Computes gas
+    // it('gas', async () => {
+    //   await snapshotGasCost(positionValue.totalGas(nft.address, 1, sqrtRatioX96))
+    // })
   })
 
   describe('#principal', () => {
@@ -245,23 +246,24 @@ describe('PositionValue', async () => {
       expect(principal.amount1).to.equal('99999999999999999999999')
     })
 
-    it('gas', async () => {
-      await nft.mint({
-        token0: tokens[0].address,
-        token1: tokens[1].address,
-        tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-        tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-        fee: FeeAmount.MEDIUM,
-        recipient: wallets[0].address,
-        amount0Desired: amountDesired,
-        amount1Desired: amountDesired,
-        amount0Min: 0,
-        amount1Min: 0,
-        deadline: 10,
-      })
+    // Unsupported: uses gas
+    // it('gas', async () => {
+    //   await nft.mint({
+    //     token0: tokens[0].address,
+    //     token1: tokens[1].address,
+    //     tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
+    //     tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
+    //     fee: FeeAmount.MEDIUM,
+    //     recipient: wallets[0].address,
+    //     amount0Desired: amountDesired,
+    //     amount1Desired: amountDesired,
+    //     amount0Min: 0,
+    //     amount1Min: 0,
+    //     deadline: 10,
+    //   })
 
-      await snapshotGasCost(positionValue.principalGas(nft.address, 1, sqrtRatioX96))
-    })
+    //   await snapshotGasCost(positionValue.principalGas(nft.address, 1, sqrtRatioX96))
+    // })
   })
 
   describe('#fees', () => {
@@ -307,22 +309,22 @@ describe('PositionValue', async () => {
         await tokens[1].approve(router.address, swapAmount)
 
         // accmuluate token0 fees
-        await router.exactInput({
-          recipient: wallets[0].address,
-          deadline: 1,
-          path: encodePath([tokens[0].address, tokens[1].address], [FeeAmount.MEDIUM]),
-          amountIn: swapAmount,
-          amountOutMinimum: 0,
-        })
+        await router.exactInput(
+          encodePath([tokens[0].address, tokens[1].address], [FeeAmount.MEDIUM]),
+          wallets[0].address,
+          1,
+          swapAmount,
+          0
+        )
 
         // accmuluate token1 fees
-        await router.exactInput({
-          recipient: wallets[0].address,
-          deadline: 1,
-          path: encodePath([tokens[1].address, tokens[0].address], [FeeAmount.MEDIUM]),
-          amountIn: swapAmount,
-          amountOutMinimum: 0,
-        })
+        await router.exactInput(
+          encodePath([tokens[1].address, tokens[0].address], [FeeAmount.MEDIUM]),
+          wallets[0].address,
+          1,
+          swapAmount,
+          0
+        )
       })
 
       it('return the correct amount of fees', async () => {
@@ -352,13 +354,13 @@ describe('PositionValue', async () => {
         await tokens[0].approve(router.address, swapAmount)
 
         // accmuluate more token0 fees after clearing initial amount
-        await router.exactInput({
-          recipient: wallets[0].address,
-          deadline: 1,
-          path: encodePath([tokens[0].address, tokens[1].address], [FeeAmount.MEDIUM]),
-          amountIn: swapAmount,
-          amountOutMinimum: 0,
-        })
+        await router.exactInput(
+          encodePath([tokens[0].address, tokens[1].address], [FeeAmount.MEDIUM]),
+          wallets[0].address,
+          1,
+          swapAmount,
+          0
+        )
 
         const feesFromCollect = await nft.callStatic.collect({
           tokenId,
@@ -371,9 +373,10 @@ describe('PositionValue', async () => {
         expect(feeAmounts[1]).to.equal(feesFromCollect[1])
       })
 
-      it('gas', async () => {
-        await snapshotGasCost(positionValue.feesGas(nft.address, tokenId))
-      })
+      // Unsupported uses gas
+      // it('gas', async () => {
+      //   await snapshotGasCost(positionValue.feesGas(nft.address, tokenId))
+      // })
     })
 
     describe('when price is below the position range', async () => {
@@ -396,22 +399,22 @@ describe('PositionValue', async () => {
         await tokens[1].approve(router.address, constants.MaxUint256)
 
         // accumulate token1 fees
-        await router.exactInput({
-          recipient: wallets[0].address,
-          deadline: 1,
-          path: encodePath([tokens[1].address, tokens[0].address], [FeeAmount.MEDIUM]),
-          amountIn: expandTo18Decimals(1_000),
-          amountOutMinimum: 0,
-        })
+        await router.exactInput(
+          encodePath([tokens[1].address, tokens[0].address], [FeeAmount.MEDIUM]),
+          wallets[0].address,
+          1,
+          expandTo18Decimals(1_000),
+          0
+        )
 
         // accumulate token0 fees and push price below tickLower
-        await router.exactInput({
-          recipient: wallets[0].address,
-          deadline: 1,
-          path: encodePath([tokens[0].address, tokens[1].address], [FeeAmount.MEDIUM]),
-          amountIn: expandTo18Decimals(50_000),
-          amountOutMinimum: 0,
-        })
+        await router.exactInput(
+          encodePath([tokens[0].address, tokens[1].address], [FeeAmount.MEDIUM]),
+          wallets[0].address,
+          1,
+          expandTo18Decimals(50_000),
+          0
+        )
       })
 
       it('returns the correct amount of fees', async () => {
@@ -427,9 +430,9 @@ describe('PositionValue', async () => {
         expect(feeAmounts[1]).to.equal(feesFromCollect[1])
       })
 
-      it('gas', async () => {
-        await snapshotGasCost(positionValue.feesGas(nft.address, tokenId))
-      })
+      // it('gas', async () => {
+      //   await snapshotGasCost(positionValue.feesGas(nft.address, tokenId))
+      // })
     })
 
     describe('when price is above the position range', async () => {
@@ -452,22 +455,22 @@ describe('PositionValue', async () => {
         await tokens[1].approve(router.address, constants.MaxUint256)
 
         // accumulate token0 fees
-        await router.exactInput({
-          recipient: wallets[0].address,
-          deadline: 1,
-          path: encodePath([tokens[0].address, tokens[1].address], [FeeAmount.MEDIUM]),
-          amountIn: expandTo18Decimals(1_000),
-          amountOutMinimum: 0,
-        })
+        await router.exactInput(
+          encodePath([tokens[0].address, tokens[1].address], [FeeAmount.MEDIUM]),
+          wallets[0].address,
+          1,
+          expandTo18Decimals(1_000),
+          0
+        )
 
         // accumulate token1 fees and push price above tickUpper
-        await router.exactInput({
-          recipient: wallets[0].address,
-          deadline: 1,
-          path: encodePath([tokens[1].address, tokens[0].address], [FeeAmount.MEDIUM]),
-          amountIn: expandTo18Decimals(50_000),
-          amountOutMinimum: 0,
-        })
+        await router.exactInput(
+          encodePath([tokens[1].address, tokens[0].address], [FeeAmount.MEDIUM]),
+          wallets[0].address,
+          1,
+          expandTo18Decimals(50_000),
+          0
+        )
       })
 
       it('returns the correct amount of fees', async () => {
@@ -482,9 +485,10 @@ describe('PositionValue', async () => {
         expect(feeAmounts[1]).to.equal(feesFromCollect[1])
       })
 
-      it('gas', async () => {
-        await snapshotGasCost(positionValue.feesGas(nft.address, tokenId))
-      })
+      // Unsupported: Uses gas
+      // it('gas', async () => {
+      //   await snapshotGasCost(positionValue.feesGas(nft.address, tokenId))
+      // })
     })
   })
 })

@@ -6,11 +6,10 @@ import {
   IUniswapV3Factory,
   IWETH9,
   MockTimeNonfungiblePositionManager,
-  NonfungiblePositionManagerPositionsGasTest,
   SwapRouter,
   TestERC20,
   TestPositionNFTOwner,
-} from '../typechain'
+} from '../typechain-types'
 import completeFixture from './shared/completeFixture'
 import { computePoolAddress } from './shared/computePoolAddress'
 import { FeeAmount, MaxUint128, TICK_SPACINGS } from './shared/constants'
@@ -143,16 +142,17 @@ describe('NonfungiblePositionManager', () => {
       )
     })
 
-    it('could theoretically use eth via multicall', async () => {
-      const [token0, token1] = sortedTokens(weth9, tokens[0])
+    // Multicall not supported
+    // it('could theoretically use eth via multicall', async () => {
+    //   const [token0, token1] = sortedTokens(weth9, tokens[0])
 
-      const createAndInitializePoolIfNecessaryData = nft.interface.encodeFunctionData(
-        'createAndInitializePoolIfNecessary',
-        [token0.address, token1.address, FeeAmount.MEDIUM, encodePriceSqrt(1, 1)]
-      )
+    //   const createAndInitializePoolIfNecessaryData = nft.interface.encodeFunctionData(
+    //     'createAndInitializePoolIfNecessary',
+    //     [token0.address, token1.address, FeeAmount.MEDIUM, encodePriceSqrt(1, 1)]
+    //   )
 
-      await nft.multicall([createAndInitializePoolIfNecessaryData], { value: expandTo18Decimals(1) })
-    })
+    //   await nft.multicall([createAndInitializePoolIfNecessaryData], { value: expandTo18Decimals(1) })
+    // })
 
     it('gas', async () => {
       await snapshotGasCost(
@@ -257,45 +257,46 @@ describe('NonfungiblePositionManager', () => {
       expect(feeGrowthInside1LastX128).to.eq(0)
     })
 
-    it('can use eth via multicall', async () => {
-      const [token0, token1] = sortedTokens(weth9, tokens[0])
+    // Not supported: Uses multicall
+    // it('can use eth via multicall', async () => {
+    //   const [token0, token1] = sortedTokens(weth9, tokens[0])
 
-      // remove any approval
-      await weth9.approve(nft.address, 0)
+    //   // remove any approval
+    //   await weth9.approve(nft.address, 0)
 
-      const createAndInitializeData = nft.interface.encodeFunctionData('createAndInitializePoolIfNecessary', [
-        token0.address,
-        token1.address,
-        FeeAmount.MEDIUM,
-        encodePriceSqrt(1, 1),
-      ])
+    //   const createAndInitializeData = nft.interface.encodeFunctionData('createAndInitializePoolIfNecessary', [
+    //     token0.address,
+    //     token1.address,
+    //     FeeAmount.MEDIUM,
+    //     encodePriceSqrt(1, 1),
+    //   ])
 
-      const mintData = nft.interface.encodeFunctionData('mint', [
-        {
-          token0: token0.address,
-          token1: token1.address,
-          tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-          tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-          fee: FeeAmount.MEDIUM,
-          recipient: other.address,
-          amount0Desired: 100,
-          amount1Desired: 100,
-          amount0Min: 0,
-          amount1Min: 0,
-          deadline: 1,
-        },
-      ])
+    //   const mintData = nft.interface.encodeFunctionData('mint', [
+    //     {
+    //       token0: token0.address,
+    //       token1: token1.address,
+    //       tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
+    //       tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
+    //       fee: FeeAmount.MEDIUM,
+    //       recipient: other.address,
+    //       amount0Desired: 100,
+    //       amount1Desired: 100,
+    //       amount0Min: 0,
+    //       amount1Min: 0,
+    //       deadline: 1,
+    //     },
+    //   ])
 
-      const refundETHData = nft.interface.encodeFunctionData('refundETH')
+    //   const refundETHData = nft.interface.encodeFunctionData('refundETH')
 
-      const balanceBefore = await wallet.getBalance()
-      const tx = await nft.multicall([createAndInitializeData, mintData, refundETHData], {
-        value: expandTo18Decimals(1),
-      })
-      const receipt = await tx.wait()
-      const balanceAfter = await wallet.getBalance()
-      expect(balanceBefore).to.eq(balanceAfter.add(receipt.gasUsed.mul(tx.gasPrice)).add(100))
-    })
+    //   const balanceBefore = await wallet.getBalance()
+    //   const tx = await nft.multicall([createAndInitializeData, mintData, refundETHData], {
+    //     value: expandTo18Decimals(1),
+    //   })
+    //   const receipt = await tx.wait()
+    //   const balanceAfter = await wallet.getBalance()
+    //   expect(balanceBefore).to.eq(balanceAfter.add(receipt.gasUsed.mul(tx.gasPrice)).add(100))
+    // })
 
     it('emits an event')
 
@@ -324,73 +325,75 @@ describe('NonfungiblePositionManager', () => {
       )
     })
 
-    it('gas first mint for pool using eth with zero refund', async () => {
-      const [token0, token1] = sortedTokens(weth9, tokens[0])
-      await nft.createAndInitializePoolIfNecessary(
-        token0.address,
-        token1.address,
-        FeeAmount.MEDIUM,
-        encodePriceSqrt(1, 1)
-      )
+    // Not supported: Uses multicall
+    // it('gas first mint for pool using eth with zero refund', async () => {
+    //   const [token0, token1] = sortedTokens(weth9, tokens[0])
+    //   await nft.createAndInitializePoolIfNecessary(
+    //     token0.address,
+    //     token1.address,
+    //     FeeAmount.MEDIUM,
+    //     encodePriceSqrt(1, 1)
+    //   )
 
-      await snapshotGasCost(
-        nft.multicall(
-          [
-            nft.interface.encodeFunctionData('mint', [
-              {
-                token0: token0.address,
-                token1: token1.address,
-                tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-                tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-                fee: FeeAmount.MEDIUM,
-                recipient: wallet.address,
-                amount0Desired: 100,
-                amount1Desired: 100,
-                amount0Min: 0,
-                amount1Min: 0,
-                deadline: 10,
-              },
-            ]),
-            nft.interface.encodeFunctionData('refundETH'),
-          ],
-          { value: 100 }
-        )
-      )
-    })
+    //   await snapshotGasCost(
+    //     nft.multicall(
+    //       [
+    //         nft.interface.encodeFunctionData('mint', [
+    //           {
+    //             token0: token0.address,
+    //             token1: token1.address,
+    //             tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
+    //             tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
+    //             fee: FeeAmount.MEDIUM,
+    //             recipient: wallet.address,
+    //             amount0Desired: 100,
+    //             amount1Desired: 100,
+    //             amount0Min: 0,
+    //             amount1Min: 0,
+    //             deadline: 10,
+    //           },
+    //         ]),
+    //         nft.interface.encodeFunctionData('refundETH'),
+    //       ],
+    //       { value: 100 }
+    //     )
+    //   )
+    // })
 
-    it('gas first mint for pool using eth with non-zero refund', async () => {
-      const [token0, token1] = sortedTokens(weth9, tokens[0])
-      await nft.createAndInitializePoolIfNecessary(
-        token0.address,
-        token1.address,
-        FeeAmount.MEDIUM,
-        encodePriceSqrt(1, 1)
-      )
+    // Not supported: Uses multicall
+    // it('gas first mint for pool using eth with non-zero refund', async () => {
+    //   const [token0, token1] = sortedTokens(weth9, tokens[0])
+    //   await nft.createAndInitializePoolIfNecessary(
+    //     token0.address,
+    //     token1.address,
+    //     FeeAmount.MEDIUM,
+    //     encodePriceSqrt(1, 1)
+    //   )
 
-      await snapshotGasCost(
-        nft.multicall(
-          [
-            nft.interface.encodeFunctionData('mint', [
-              {
-                token0: token0.address,
-                token1: token1.address,
-                tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-                tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-                fee: FeeAmount.MEDIUM,
-                recipient: wallet.address,
-                amount0Desired: 100,
-                amount1Desired: 100,
-                amount0Min: 0,
-                amount1Min: 0,
-                deadline: 10,
-              },
-            ]),
-            nft.interface.encodeFunctionData('refundETH'),
-          ],
-          { value: 1000 }
-        )
-      )
-    })
+    //   await snapshotGasCost(
+    //     nft.multicall(
+    //       [
+    //         nft.interface.encodeFunctionData('mint', [
+    //           {
+    //             token0: token0.address,
+    //             token1: token1.address,
+    //             tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
+    //             tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
+    //             fee: FeeAmount.MEDIUM,
+    //             recipient: wallet.address,
+    //             amount0Desired: 100,
+    //             amount1Desired: 100,
+    //             amount0Min: 0,
+    //             amount1Min: 0,
+    //             deadline: 10,
+    //           },
+    //         ]),
+    //         nft.interface.encodeFunctionData('refundETH'),
+    //       ],
+    //       { value: 1000 }
+    //     )
+    //   )
+    // })
 
     it('gas mint on same ticks', async () => {
       await nft.createAndInitializePoolIfNecessary(
@@ -511,48 +514,49 @@ describe('NonfungiblePositionManager', () => {
 
     it('emits an event')
 
-    it('can be paid with ETH', async () => {
-      const [token0, token1] = sortedTokens(tokens[0], weth9)
+    // Not supported: Multicall
+    // it('can be paid with ETH', async () => {
+    //   const [token0, token1] = sortedTokens(tokens[0], weth9)
 
-      const tokenId = 1
+    //   const tokenId = 1
 
-      await nft.createAndInitializePoolIfNecessary(
-        token0.address,
-        token1.address,
-        FeeAmount.MEDIUM,
-        encodePriceSqrt(1, 1)
-      )
+    //   await nft.createAndInitializePoolIfNecessary(
+    //     token0.address,
+    //     token1.address,
+    //     FeeAmount.MEDIUM,
+    //     encodePriceSqrt(1, 1)
+    //   )
 
-      const mintData = nft.interface.encodeFunctionData('mint', [
-        {
-          token0: token0.address,
-          token1: token1.address,
-          fee: FeeAmount.MEDIUM,
-          tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-          tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-          recipient: other.address,
-          amount0Desired: 100,
-          amount1Desired: 100,
-          amount0Min: 0,
-          amount1Min: 0,
-          deadline: 1,
-        },
-      ])
-      const refundETHData = nft.interface.encodeFunctionData('unwrapWETH9', [0, other.address])
-      await nft.multicall([mintData, refundETHData], { value: expandTo18Decimals(1) })
+    //   const mintData = nft.interface.encodeFunctionData('mint', [
+    //     {
+    //       token0: token0.address,
+    //       token1: token1.address,
+    //       fee: FeeAmount.MEDIUM,
+    //       tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
+    //       tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
+    //       recipient: other.address,
+    //       amount0Desired: 100,
+    //       amount1Desired: 100,
+    //       amount0Min: 0,
+    //       amount1Min: 0,
+    //       deadline: 1,
+    //     },
+    //   ])
+    //   const refundETHData = nft.interface.encodeFunctionData('unwrapWETH9', [0, other.address])
+    //   await nft.multicall([mintData, refundETHData], { value: expandTo18Decimals(1) })
 
-      const increaseLiquidityData = nft.interface.encodeFunctionData('increaseLiquidity', [
-        {
-          tokenId: tokenId,
-          amount0Desired: 100,
-          amount1Desired: 100,
-          amount0Min: 0,
-          amount1Min: 0,
-          deadline: 1,
-        },
-      ])
-      await nft.multicall([increaseLiquidityData, refundETHData], { value: expandTo18Decimals(1) })
-    })
+    //   const increaseLiquidityData = nft.interface.encodeFunctionData('increaseLiquidity', [
+    //     {
+    //       tokenId: tokenId,
+    //       amount0Desired: 100,
+    //       amount1Desired: 100,
+    //       amount0Min: 0,
+    //       amount1Min: 0,
+    //       deadline: 1,
+    //     },
+    //   ])
+    //   await nft.multicall([increaseLiquidityData, refundETHData], { value: expandTo18Decimals(1) })
+    // })
 
     it('gas', async () => {
       await snapshotGasCost(
@@ -1062,68 +1066,69 @@ describe('NonfungiblePositionManager', () => {
       })
     })
 
-    async function exit({
-      nft,
-      liquidity,
-      tokenId,
-      amount0Min,
-      amount1Min,
-      recipient,
-    }: {
-      nft: MockTimeNonfungiblePositionManager
-      tokenId: BigNumberish
-      liquidity: BigNumberish
-      amount0Min: BigNumberish
-      amount1Min: BigNumberish
-      recipient: string
-    }) {
-      const decreaseLiquidityData = nft.interface.encodeFunctionData('decreaseLiquidity', [
-        { tokenId, liquidity, amount0Min, amount1Min, deadline: 1 },
-      ])
-      const collectData = nft.interface.encodeFunctionData('collect', [
-        {
-          tokenId,
-          recipient,
-          amount0Max: MaxUint128,
-          amount1Max: MaxUint128,
-        },
-      ])
-      const burnData = nft.interface.encodeFunctionData('burn', [tokenId])
+    // async function exit({
+    //   nft,
+    //   liquidity,
+    //   tokenId,
+    //   amount0Min,
+    //   amount1Min,
+    //   recipient,
+    // }: {
+    //   nft: MockTimeNonfungiblePositionManager
+    //   tokenId: BigNumberish
+    //   liquidity: BigNumberish
+    //   amount0Min: BigNumberish
+    //   amount1Min: BigNumberish
+    //   recipient: string
+    // }) {
+    //   const decreaseLiquidityData = nft.interface.encodeFunctionData('decreaseLiquidity', [
+    //     { tokenId, liquidity, amount0Min, amount1Min, deadline: 1 },
+    //   ])
+    //   const collectData = nft.interface.encodeFunctionData('collect', [
+    //     {
+    //       tokenId,
+    //       recipient,
+    //       amount0Max: MaxUint128,
+    //       amount1Max: MaxUint128,
+    //     },
+    //   ])
+    //   const burnData = nft.interface.encodeFunctionData('burn', [tokenId])
 
-      return nft.multicall([decreaseLiquidityData, collectData, burnData])
-    }
+    //   return nft.multicall([decreaseLiquidityData, collectData, burnData])
+    // }
 
-    it('executes all the actions', async () => {
-      const pool = poolAtAddress(
-        computePoolAddress(factory.address, [tokens[0].address, tokens[1].address], FeeAmount.MEDIUM),
-        wallet
-      )
-      await expect(
-        exit({
-          nft: nft.connect(other),
-          tokenId,
-          liquidity: 100,
-          amount0Min: 0,
-          amount1Min: 0,
-          recipient: wallet.address,
-        })
-      )
-        .to.emit(pool, 'Burn')
-        .to.emit(pool, 'Collect')
-    })
+    // Uses `exit` defined above which uses multicall
+    // it('executes all the actions', async () => {
+    //   const pool = poolAtAddress(
+    //     computePoolAddress(factory.address, [tokens[0].address, tokens[1].address], FeeAmount.MEDIUM),
+    //     wallet
+    //   )
+    //   await expect(
+    //     exit({
+    //       nft: nft.connect(other),
+    //       tokenId,
+    //       liquidity: 100,
+    //       amount0Min: 0,
+    //       amount1Min: 0,
+    //       recipient: wallet.address,
+    //     })
+    //   )
+    //     .to.emit(pool, 'Burn')
+    //     .to.emit(pool, 'Collect')
+    // })
 
-    it('gas', async () => {
-      await snapshotGasCost(
-        exit({
-          nft: nft.connect(other),
-          tokenId,
-          liquidity: 100,
-          amount0Min: 0,
-          amount1Min: 0,
-          recipient: wallet.address,
-        })
-      )
-    })
+    // it('gas', async () => {
+    //   await snapshotGasCost(
+    //     exit({
+    //       nft: nft.connect(other),
+    //       tokenId,
+    //       liquidity: 100,
+    //       amount0Min: 0,
+    //       amount1Min: 0,
+    //       recipient: wallet.address,
+    //     })
+    //   )
+    // })
   })
 
   describe('#tokenURI', async () => {
@@ -1210,13 +1215,13 @@ describe('NonfungiblePositionManager', () => {
       beforeEach('swap for ~10k of fees', async () => {
         const swapAmount = 3_333_333
         await tokens[0].approve(router.address, swapAmount)
-        await router.exactInput({
-          recipient: wallet.address,
-          deadline: 1,
-          path: encodePath([tokens[0].address, tokens[1].address], [FeeAmount.MEDIUM]),
-          amountIn: swapAmount,
-          amountOutMinimum: 0,
-        })
+        await router.exactInput(
+          encodePath([tokens[0].address, tokens[1].address], [FeeAmount.MEDIUM]),
+          wallet.address,
+          1,
+          swapAmount,
+          0
+        )
       })
       it('expected amounts', async () => {
         const { amount0: nft1Amount0, amount1: nft1Amount1 } = await nft.callStatic.collect({
@@ -1271,34 +1276,32 @@ describe('NonfungiblePositionManager', () => {
   })
 
   describe('#positions', async () => {
-    it('gas', async () => {
-      const positionsGasTestFactory = await ethers.getContractFactory('NonfungiblePositionManagerPositionsGasTest')
-      const positionsGasTest = (await positionsGasTestFactory.deploy(
-        nft.address
-      )) as NonfungiblePositionManagerPositionsGasTest
-
-      await nft.createAndInitializePoolIfNecessary(
-        tokens[0].address,
-        tokens[1].address,
-        FeeAmount.MEDIUM,
-        encodePriceSqrt(1, 1)
-      )
-
-      await nft.mint({
-        token0: tokens[0].address,
-        token1: tokens[1].address,
-        tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-        tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-        fee: FeeAmount.MEDIUM,
-        recipient: other.address,
-        amount0Desired: 15,
-        amount1Desired: 15,
-        amount0Min: 0,
-        amount1Min: 0,
-        deadline: 10,
-      })
-
-      await snapshotGasCost(positionsGasTest.getGasCostOfPositions(1))
-    })
+    // Unsupported: Test gas
+    // it('gas', async () => {
+    //   const positionsGasTestFactory = await ethers.getContractFactory('NonfungiblePositionManagerPositionsGasTest')
+    //   const positionsGasTest = (await positionsGasTestFactory.deploy(
+    //     nft.address
+    //   )) as NonfungiblePositionManagerPositionsGasTest
+    //   await nft.createAndInitializePoolIfNecessary(
+    //     tokens[0].address,
+    //     tokens[1].address,
+    //     FeeAmount.MEDIUM,
+    //     encodePriceSqrt(1, 1)
+    //   )
+    //   await nft.mint({
+    //     token0: tokens[0].address,
+    //     token1: tokens[1].address,
+    //     tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
+    //     tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
+    //     fee: FeeAmount.MEDIUM,
+    //     recipient: other.address,
+    //     amount0Desired: 15,
+    //     amount1Desired: 15,
+    //     amount0Min: 0,
+    //     amount1Min: 0,
+    //     deadline: 10,
+    //   })
+    //   await snapshotGasCost(positionsGasTest.getGasCostOfPositions(1))
+    // })
   })
 })

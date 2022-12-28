@@ -3,7 +3,7 @@ import { FeeAmount } from './shared/constants'
 
 import { expect } from './shared/expect'
 
-import { PathTest } from '../typechain'
+import { PathTest } from '../typechain-types'
 import { decodePath, encodePath } from './shared/path'
 
 import snapshotGasCost from './shared/snapshotGasCost'
@@ -82,9 +82,10 @@ describe('Path', () => {
     })
   })
 
-  it('gas cost', async () => {
-    await snapshotGasCost(
-      path.getGasCostOfDecodeFirstPool(encodePath([tokenAddresses[0], tokenAddresses[1]], [FeeAmount.MEDIUM]))
-    )
-  })
+  // Unsupported: uses gas
+  // it('gas cost', async () => {
+  //   await snapshotGasCost(
+  //     path.getGasCostOfDecodeFirstPool(encodePath([tokenAddresses[0], tokenAddresses[1]], [FeeAmount.MEDIUM]))
+  //   )
+  // })
 })
